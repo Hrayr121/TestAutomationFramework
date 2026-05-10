@@ -1,0 +1,21 @@
+[
+  {
+    "description": "Valid credentials should land on dashboard",
+    "username": "testuser@example.com",
+    "password": "securePassword123",
+    "shouldSucceed": true
+  },
+  {
+    "description": "Invalid password should not log in",
+    "username": "testuser@example.com",
+    "password": "wrongPassword",
+    "shouldSucceed": false
+  },
+  {
+    "description": "Unknown user should not log in",
+    "username": "ghost@example.com",
+    "password": "whatever",
+    "shouldSucceed": false
+  }
+]
+
