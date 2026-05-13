@@ -19,7 +19,7 @@ public class DriverFactory {
     }
 
     public static WebDriver create(String browserName, boolean headless) {
-        return create(BrowserType.fromString(browserName), headless);
+        return create(BrowserType.fromString(browserName), headless); //converts browserName string to BrowserType enum via BrowserType.fromString
     }
 
     public static WebDriver create(BrowserType browser, boolean headless) {
@@ -31,13 +31,13 @@ public class DriverFactory {
     }
 
     private static WebDriver createChrome(boolean headless) {
-        WebDriverManager.chromedriver().setup();
+        WebDriverManager.chromedriver().setup(); //downloads the matching ChromeDriver for the installed Chrome, and points Selenium at it., to  avoid hand-installing chromedriver on PATH.
         ChromeOptions options = new ChromeOptions();
         if (headless) {
             options.addArguments("--headless=new");
         }
         options.addArguments("--disable-blink-features=AutomationControlled");
-        return new ChromeDriver(options);
+        return new ChromeDriver(options); // constructs a real browser session: starts Chrome, returns a WebDriver handle to be used for get, findElement, etc
     }
 
     private static WebDriver createFirefox(boolean headless) {

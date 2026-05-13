@@ -18,17 +18,22 @@ public class BaseTest {
         return driverThread.get();
     }
 
-    @BeforeMethod
+    /**
+     * {@code alwaysRun = true} so setup still runs when tests are filtered with {@code -Dgroups=...}
+     * (otherwise TestNG may skip configuration methods and {@link #getDriver()} stays null).
+     */
+    @BeforeMethod(alwaysRun = true)
     public void setUp() {
         String browser = ConfigReader.get("browser");
         boolean headless = ConfigReader.getBoolean("headless");
 
         WebDriver driver = DriverFactory.create(browser, headless);
         driver.manage().window().maximize();
+
         driverThread.set(driver);
     }
 
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     public void tearDown() {
         WebDriver driver = driverThread.get();
         if (driver != null) {
