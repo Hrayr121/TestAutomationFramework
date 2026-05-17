@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+
+<!-- Run: mvn test -Dsurefire.suiteXmlFiles=testng-failure-demo.xml to execute these tests-->
+<suite name="AllureFailureDemoSuite" verbose="1" parallel="methods" thread-count="1">
+
+    <listeners>
+        <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
+        <listener class-name="com.testframework.core.listeners.AllureEnvironmentListener"/>
+        <listener class-name="com.testframework.core.listeners.ScreenshotListener"/>
+    </listeners>
+
+    <test name="Mixed pass and fail for Allure">
+        <classes>
+            <class name="com.testframework.examples.tests.ExampleSiteSmokeTest">
+                <methods>
+                    <include name="loadsExampleDomain"/>
+                </methods>
+            </class>
+            <class name="com.testframework.examples.failuredemos.AllureFailureDemoTest"/>
+        </classes>
+    </test>
+
+</suite>

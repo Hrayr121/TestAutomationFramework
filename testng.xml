@@ -5,6 +5,8 @@
 <suite name="TestSuite" verbose="1" parallel="methods" thread-count="1">
 
     <listeners>
+        <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
+        <listener class-name="com.testframework.core.listeners.AllureEnvironmentListener"/>
         <listener class-name="com.testframework.core.listeners.ScreenshotListener"/>
     </listeners>
 

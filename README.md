@@ -50,13 +50,49 @@ mvn test -Dgroups=smoke
 
 `testng.xml` uses `parallel="methods"`. `BaseTest` stores `WebDriver` in a `ThreadLocal` per thread. Increase `thread-count` only after your tests and app under test tolerate parallel sessions.
 
-## Failure screenshots
+## Allure reports
 
-`com.testframework.core.listeners.ScreenshotListener` writes PNGs under `target/screenshots/` on failure. Registered in `testng.xml`.
+Allure records **every** test execution — **passed**, **failed**, and **skipped** — under `target/allure-results/` during `mvn test`. The HTML report shows all of them; failures additionally get screenshot, URL, and stack trace attachments from `ScreenshotListener`.
+
+Listeners in `testng.xml`:
+
+| Listener | Role |
+|----------|------|
+| `io.qameta.allure.testng.AllureTestNg` | Allure ↔ TestNG lifecycle |
+| `AllureEnvironmentListener` | Labels/parameters: `env`, `browser`, `headless`, `base.url` |
+| `ScreenshotListener` | On failure: PNG to `target/screenshots/` + Allure attachments (screenshot, URL, stack trace) |
+
+**View the HTML report locally:**
+
+```bash
+mvn test
+mvn allure:serve
+```
+
+`allure:serve` opens a browser with the report (requires a display). To generate static HTML without serving:
+
+```bash
+mvn allure:report
+```
+
+Output is under `target/site/allure-maven-plugin/` (open `index.html`).
+
+**CI:** Run `mvn test`, then publish `target/allure-results/` (and optionally `target/screenshots/`) as build artifacts. Generate the report in the pipeline with `mvn allure:report` if agents should not use `allure:serve`.
+
+Surefire JUnit XML in `target/surefire-reports/` remains available for pass/fail gates.
+
+**Demo failures for Allure** (one passing smoke + three intentional failures; Maven build will fail):
+
+```bash
+mvn test -Dsurefire.suiteXmlFiles=testng-failure-demo.xml
+mvn allure:serve
+```
+
+Failure demos live in package `com.testframework.examples.failuredemos` (not scanned by default `testng.xml`, which only includes `com.testframework.examples.tests`).
 
 ## CI
 
-Run `mvn -B verify` in your pipeline. For headless agents, set `headless=true` in the appropriate `config-*.properties` or add a dedicated properties file and `-Denv=ci` once you add `config-ci.properties`.
+Run `mvn -B verify` in your pipeline. For headless agents, set `headless=true` in the appropriate `config-*.properties` or add a dedicated properties file and `-Denv=ci` once you add `config-ci.properties`. Upload `target/allure-results/` after the test step for Allure report generation in Jenkins, GitHub Actions, etc.
 
 ## Graduating to a published JAR
 
