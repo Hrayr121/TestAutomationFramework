@@ -90,9 +90,29 @@ mvn allure:serve
 
 Failure demos live in package `com.testframework.examples.failuredemos` (not scanned by default `testng.xml`, which only includes `com.testframework.examples.tests`).
 
-## CI
+## CI (GitHub Actions)
 
-Run `mvn -B verify` in your pipeline. For headless agents, set `headless=true` in the appropriate `config-*.properties` or add a dedicated properties file and `-Denv=ci` once you add `config-ci.properties`. Upload `target/allure-results/` after the test step for Allure report generation in Jenkins, GitHub Actions, etc.
+Workflow: [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
+
+| Trigger | Behavior |
+|---------|----------|
+| Push / PR to `main` or `master` | `mvn clean test -Denv=ci` (headless Chrome) |
+| Nightly (`02:00 UTC`) | Same suite |
+| Manual | **Actions** → **CI** → **Run workflow** |
+
+CI uses **`config-ci.properties`** (`headless=true`, public demo URLs). It does **not** use your corporate `settings.xml`; dependencies come from Maven Central on the runner.
+
+**Artifacts** (14 days): Surefire reports, `allure-results`, generated Allure HTML, failure screenshots — download from the workflow run → **Artifacts**.
+
+**Slack on failure (optional):** In the repo → **Settings** → **Secrets and variables** → **Actions** → New secret `SLACK_WEBHOOK_URL` (Incoming Webhook URL). If unset, tests still run; only the notify step is skipped.
+
+**Local parity with CI:**
+
+```bash
+mvn clean test -Denv=ci
+```
+
+Other CI systems (Jenkins, GitLab): same command plus upload `target/allure-results/` and `target/surefire-reports/`.
 
 ## Graduating to a published JAR
 
