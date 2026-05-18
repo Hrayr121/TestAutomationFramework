@@ -60,8 +60,12 @@ public class ConfigReader {
         return Boolean.parseBoolean(get(key));
     }
 
+    /** Active env id from {@code -Denv=} or {@code config.properties} (e.g. {@code ci}, {@code staging}). */
+    public static String getEnvironmentName() {
+        return System.getProperty("env", props.getProperty("env", "staging"));
+    }
+
     public static Environment getEnvironment() {
-        String env = System.getProperty("env", props.getProperty("env", "staging"));
-        return Environment.fromString(env);
+        return Environment.fromString(getEnvironmentName());
     }
 }

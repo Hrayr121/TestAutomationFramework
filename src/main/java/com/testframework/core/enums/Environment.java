@@ -3,7 +3,8 @@ package com.testframework.core.enums;
 public enum Environment {
     DEV("dev"),
     STAGING("staging"),
-    PROD("prod");
+    PROD("prod"),
+    CI("ci");
 
     private final String name;
 

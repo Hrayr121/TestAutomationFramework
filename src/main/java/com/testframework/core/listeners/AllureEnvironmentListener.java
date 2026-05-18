@@ -12,7 +12,7 @@ public class AllureEnvironmentListener implements ITestListener {
 
     @Override
     public void onTestStart(ITestResult result) {
-        Allure.label("env", ConfigReader.getEnvironment().getValue());
+        Allure.label("env", ConfigReader.getEnvironmentName());
         Allure.label("browser", ConfigReader.get("browser"));
         Allure.parameter("headless", String.valueOf(ConfigReader.getBoolean("headless")));
         Allure.parameter("base.url", ConfigReader.get("base.url"));
