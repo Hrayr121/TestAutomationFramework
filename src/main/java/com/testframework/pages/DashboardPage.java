@@ -27,8 +27,8 @@ public class DashboardPage extends BasePage {
         return getCurrentUrl().contains("/dashboard");
     }
 
-    public MyAccountPage clickLogout() {
+    public LoginPage clickLogout() {
         click(logoutButton);
-        return new MyAccountPage(driver);
+        return new LoginPage(driver);
     }
 }

@@ -7,8 +7,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
 /**
- * Extend this class for UI tests. The WebDriver is created per test method and stored in a {@link ThreadLocal}
- * so parallel TestNG execution stays isolated.
+ * Extend this class for UI tests. The WebDriver is created per test method and stored in a  ThreadLocal object
+ * so parallel TestNG executions stay isolated.
  */
 public class BaseTest {
 
@@ -17,9 +17,8 @@ public class BaseTest {
     protected WebDriver getDriver() {
         return driverThread.get();
     }
-
     /**
-     * {@code alwaysRun = true} so setup still runs when tests are filtered with {@code -Dgroups=...}
+     * {alwaysRun = true} so setup still runs when tests are filtered with {@code -Dgroups=...}
      * (otherwise TestNG may skip configuration methods and {@link #getDriver()} stays null).
      */
     @BeforeMethod(alwaysRun = true)

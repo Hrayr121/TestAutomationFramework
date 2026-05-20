@@ -10,8 +10,8 @@ import java.nio.charset.StandardCharsets;
 public class JsonReader {
 
     /**
-     * Reads a JSON array file from the classpath and returns a TestNG {@code @DataProvider} compatible {@code Object[][]}.
-     * Each row contains a single {@code JsonObject}.
+     * Reads a JSON array file from the classpath and returns a TestNG @DataProvide} compatible Object[][].
+     * Each row contains a single JsonObject.
      */
     public static Object[][] readAsDataProvider(String classpathResource) throws IOException {
         JsonArray array = readJsonArray(classpathResource);

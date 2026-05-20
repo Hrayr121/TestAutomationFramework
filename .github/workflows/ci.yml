@@ -36,7 +36,14 @@ jobs:
       - name: Install Chrome
         uses: browser-actions/setup-chrome@v1
 
+      - name: Print browser versions
+        run: |
+          google-chrome --version
+          chromedriver --version || true
+
       - name: Run tests
+        env:
+          WDM_CACHE_PATH: /tmp/wdm-cache
         run: mvn -B clean test -Denv=ci
 
       - name: Generate Allure report

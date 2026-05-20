@@ -5,7 +5,7 @@ import com.testframework.core.BaseTest;
 import com.testframework.core.config.ConfigReader;
 import com.testframework.core.data.JsonReader;
 import com.testframework.pages.DashboardPage;
-import com.testframework.pages.MyAccountPage;
+import com.testframework.pages.LoginPage;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Ignore;
@@ -35,7 +35,7 @@ public class SampleLoginTest extends BaseTest {
 
         getDriver().get(LOGIN_URL);
 
-        DashboardPage dashboardPage = new MyAccountPage(getDriver())
+        DashboardPage dashboardPage = new LoginPage(getDriver())
                 .enterUsername(username)
                 .enterPassword(password)
                 .submitLogin();

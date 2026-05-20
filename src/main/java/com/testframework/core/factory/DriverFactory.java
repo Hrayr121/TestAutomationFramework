@@ -35,6 +35,8 @@ public class DriverFactory {
         ChromeOptions options = new ChromeOptions();
         if (headless) {
             options.addArguments("--headless=new");
+            // Required on many Linux CI runners (e.g. GitHub Actions).
+            options.addArguments("--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu");
         }
         options.addArguments("--disable-blink-features=AutomationControlled");
         return new ChromeDriver(options); // constructs a real browser session: starts Chrome, returns a WebDriver handle to be used for get, findElement, etc

@@ -4,10 +4,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-/**
- * Example login page. Replace with your own page classes in this package, or delete when unused.
- */
-public class MyAccountPage extends BasePage {
+public class LoginPage extends BasePage {
 
     @FindBy(id = "username")
     private WebElement usernameField;
@@ -18,16 +15,16 @@ public class MyAccountPage extends BasePage {
     @FindBy(css = "[name='login'][type='submit']")
     private WebElement loginButton;
 
-    public MyAccountPage(WebDriver driver) {
+    public LoginPage(WebDriver driver) {
         super(driver);
     }
 
-    public MyAccountPage enterUsername(String username) {
+    public LoginPage enterUsername(String username) {
         type(usernameField, username);
         return this;
     }
 
-    public MyAccountPage enterPassword(String password) {
+    public LoginPage enterPassword(String password) {
         type(passwordField, password);
         return this;
     }

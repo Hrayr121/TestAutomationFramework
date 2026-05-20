@@ -125,4 +125,4 @@ Until then, **treat this repo as the template**: fork or use “Use this templat
 
 ## Removing the examples
 
-Delete `src/test/java/com/testframework/examples` and remove the `<package name="com.testframework.examples.tests"/>` entry from `testng.xml` once your own tests are in place. Remove or replace sample classes in `com.testframework.pages` (`MyAccountPage`, `DashboardPage`) when you no longer need them; keep `BasePage` as the parent for your pages unless you fork it.
+Delete `src/test/java/com/testframework/examples` and remove the `<package name="com.testframework.examples.tests"/>` entry from `testng.xml` once your own tests are in place. Remove or replace sample classes in `com.testframework.pages` (`LoginPage`, `DashboardPage`) when you no longer need them; keep `BasePage` as the parent for your pages unless you fork it.
