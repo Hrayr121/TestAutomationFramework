@@ -63,18 +63,25 @@ jobs:
             target/site/allure-maven-plugin/
             target/screenshots/
 
-      - name: Slack notification on failure
-        if: failure()
+      - name: Slack notification (success or failure)
+        if: always()
         continue-on-error: true
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          JOB_STATUS: ${{ job.status }}
         run: |
           if [ -z "$SLACK_WEBHOOK_URL" ]; then
             echo "SLACK_WEBHOOK_URL not set — skip notification"
             exit 0
           fi
-          TEXT=":x: CI failed for ${GITHUB_REPOSITORY} @ ${GITHUB_REF_NAME} — ${RUN_URL}"
+          case "$JOB_STATUS" in
+            success)   ICON=":white_check_mark:"; STATE="passed" ;;
+            failure)   ICON=":x:";                STATE="failed" ;;
+            cancelled) ICON=":no_entry_sign:";    STATE="cancelled" ;;
+            *)         ICON=":grey_question:";    STATE="$JOB_STATUS" ;;
+          esac
+          TEXT="${ICON} CI ${STATE} for ${GITHUB_REPOSITORY} @ ${GITHUB_REF_NAME} — ${RUN_URL}"
           curl -sS -X POST -H "Content-type: application/json" \
             -d "$(jq -n --arg t "$TEXT" '{text: $t}')" \
             "$SLACK_WEBHOOK_URL"

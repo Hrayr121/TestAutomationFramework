@@ -104,7 +104,12 @@ CI uses **`config-ci.properties`** (`headless=true`, public demo URLs). It does 
 
 **Artifacts** (14 days): Surefire reports, `allure-results`, generated Allure HTML, failure screenshots — download from the workflow run → **Artifacts**.
 
-**Slack on failure (optional):** In the repo → **Settings** → **Secrets and variables** → **Actions** → New secret `SLACK_WEBHOOK_URL` (Incoming Webhook URL). If unset, tests still run; only the notify step is skipped.
+**Slack notifications (optional, every run):** posts a passed/failed/cancelled message after each CI run. To enable:
+
+1. **Create an Incoming Webhook in Slack** — open `https://api.slack.com/apps` → **Create New App** → **From scratch** → pick a workspace → **Incoming Webhooks** → toggle **On** → **Add New Webhook to Workspace** → select a channel → copy the URL (`https://hooks.slack.com/services/T.../B.../...`).
+2. **Add it to GitHub** — repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret** → name `SLACK_WEBHOOK_URL`, paste the URL.
+
+If the secret is unset, tests still run; the Slack step is skipped. Download **Artifacts** from the workflow run for Allure HTML and screenshots.
 
 **Local parity with CI:**
 
