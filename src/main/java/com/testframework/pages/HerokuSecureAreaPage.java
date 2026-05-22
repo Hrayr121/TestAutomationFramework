@@ -1,8 +1,10 @@
 package com.testframework.pages;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 /**
  * Secure area after successful login on the Heroku “the-internet” demo ({@code /secure}).
@@ -29,6 +31,10 @@ public class HerokuSecureAreaPage extends BasePage {
 
     public HerokuLoginPage clickLogout() {
         click(logoutButton);
+        wait.until(ExpectedConditions.and(
+                ExpectedConditions.urlContains("/login"),
+                ExpectedConditions.visibilityOfElementLocated(By.id("flash"))
+        ));
         return new HerokuLoginPage(driver);
     }
 }
