@@ -12,6 +12,9 @@ public class HerokuSecureAreaPage extends BasePage {
     @FindBy(id = "flash")
     private WebElement flashBanner;
 
+    @FindBy(css = "a.button[href='/logout']")
+    private WebElement logoutButton;
+
     public HerokuSecureAreaPage(WebDriver driver) {
         super(driver);
     }
@@ -22,5 +25,10 @@ public class HerokuSecureAreaPage extends BasePage {
 
     public String getFlashMessage() {
         return getText(flashBanner);
+    }
+
+    public HerokuLoginPage clickLogout() {
+        click(logoutButton);
+        return new HerokuLoginPage(driver);
     }
 }

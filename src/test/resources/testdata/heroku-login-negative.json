@@ -1,0 +1,20 @@
+[
+  {
+    "description": "Unknown username should be rejected",
+    "username": "ghost",
+    "password": "SuperSecretPassword!",
+    "expectedFlashContains": "Your username is invalid!"
+  },
+  {
+    "description": "Wrong password for known user should be rejected",
+    "username": "tomsmith",
+    "password": "wrong-password",
+    "expectedFlashContains": "Your password is invalid!"
+  },
+  {
+    "description": "Empty credentials should be rejected",
+    "username": "",
+    "password": "",
+    "expectedFlashContains": "Your username is invalid!"
+  }
+]

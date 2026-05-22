@@ -19,7 +19,8 @@ public class BasePage {
     public BasePage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(DEFAULT_TIMEOUT_SECONDS));
-        PageFactory.initElements(driver, this);
+        PageFactory.initElements(driver, this);  //PageFactory scans the class for every field annotated with @FindBy and replaces each null with a proxy object — a
+                                                        // placeholder that knows the locator strategy (id="username") but hasn't touched the DOM yet.
     }
 
     protected void navigateTo(String url) {

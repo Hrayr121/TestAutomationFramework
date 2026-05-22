@@ -30,7 +30,7 @@ public class LoginPage extends BasePage {
     }
 
     public DashboardPage submitLogin() {
-        click(loginButton);
+        click(loginButton); // click is from BasePage, which includes waiting logic
         return new DashboardPage(driver);
     }
 }

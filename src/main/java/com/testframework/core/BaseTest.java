@@ -18,8 +18,8 @@ public class BaseTest {
         return driverThread.get();
     }
     /**
-     * {alwaysRun = true} so setup still runs when tests are filtered with {@code -Dgroups=...}
-     * (otherwise TestNG may skip configuration methods and {@link #getDriver()} stays null).
+     * {alwaysRun = true} so setup still runs when tests are filtered with -Dgroups=...
+     * (otherwise TestNG may skip configuration methods and getDriver() stays null).
      */
     @BeforeMethod(alwaysRun = true)
     public void setUp() {

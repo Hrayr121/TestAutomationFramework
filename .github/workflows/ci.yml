@@ -63,25 +63,104 @@ jobs:
             target/site/allure-maven-plugin/
             target/screenshots/
 
-      - name: Slack notification (success or failure)
+      - name: Build Slack payload
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          COMMIT_URL: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: |
+          python3 << 'PYEOF' > slack-payload.json
+          import glob, json, os, subprocess, xml.etree.ElementTree as ET
+
+          status     = os.environ.get("JOB_STATUS", "unknown")
+          repo       = os.environ.get("REPO", "")
+          branch     = os.environ.get("BRANCH", "")
+          run_url    = os.environ.get("RUN_URL", "")
+          commit_url = os.environ.get("COMMIT_URL", "")
+          sha        = os.environ.get("COMMIT_SHA", "")[:7]
+
+          banners = {
+              "success":   (":white_check_mark:", "CI passed"),
+              "failure":   (":x:",                "CI failed"),
+              "cancelled": (":no_entry_sign:",    "CI cancelled"),
+          }
+          icon, label = banners.get(status, (":grey_question:", f"CI {status}"))
+          headline = f"{icon} {label} — {repo}"
+
+          def git(*args):
+              try:
+                  return subprocess.check_output(["git", *args], text=True).strip()
+              except Exception:
+                  return ""
+
+          author  = git("log", "-1", "--pretty=%an") or "unknown"
+          message = (git("log", "-1", "--pretty=%s") or "")[:140]
+
+          total = failures = errors = skipped = 0
+          duration_s = 0.0
+          failed_names = []
+          for path in sorted(glob.glob("target/surefire-reports/TEST-*.xml")):
+              try:
+                  root = ET.parse(path).getroot()
+                  total      += int(root.get("tests", 0))
+                  failures   += int(root.get("failures", 0))
+                  errors     += int(root.get("errors", 0))
+                  skipped    += int(root.get("skipped", 0))
+                  duration_s += float(root.get("time", 0))
+                  for tc in root.findall("testcase"):
+                      if tc.find("failure") is not None or tc.find("error") is not None:
+                          cls = tc.get("classname", "").split(".")[-1]
+                          name = tc.get("name", "")
+                          failed_names.append(f"{cls}.{name}")
+              except Exception:
+                  pass
+          passed = max(total - failures - errors - skipped, 0)
+
+          shown = failed_names[:10]
+          more  = len(failed_names) - len(shown)
+          failed_block = "\n".join(f"• {n}" for n in shown) if shown else "_(none)_"
+          if more > 0:
+              failed_block += f"\n_…and {more} more_"
+
+          blocks = [
+              {"type": "header", "text": {"type": "plain_text", "text": headline[:150]}},
+              {"type": "section", "fields": [
+                  {"type": "mrkdwn", "text": f"*Branch:*\n`{branch}`"},
+                  {"type": "mrkdwn", "text": f"*Commit:*\n<{commit_url}|`{sha}`> by {author}"},
+                  {"type": "mrkdwn", "text": f"*Duration:*\n{duration_s:.1f}s"},
+                  {"type": "mrkdwn", "text": (
+                      f"*Tests:*\n{total} total · {passed} passed · "
+                      f"{failures} failed · {errors} errors · {skipped} skipped"
+                  )},
+              ]},
+          ]
+          if message:
+              blocks.append({"type": "section", "text": {
+                  "type": "mrkdwn", "text": f"*Message:* {message}"}})
+          blocks.append({"type": "section", "text": {
+              "type": "mrkdwn", "text": f"*Failed tests:*\n{failed_block}"}})
+          blocks.append({"type": "actions", "elements": [
+              {"type": "button", "text": {"type": "plain_text", "text": "View run"}, "url": run_url},
+          ]})
+
+          print(json.dumps({"text": headline, "blocks": blocks}))
+          PYEOF
+          echo "Payload preview:"
+          cat slack-payload.json
+
+      - name: Slack notification
         if: always()
         continue-on-error: true
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          JOB_STATUS: ${{ job.status }}
         run: |
           if [ -z "$SLACK_WEBHOOK_URL" ]; then
             echo "SLACK_WEBHOOK_URL not set — skip notification"
             exit 0
           fi
-          case "$JOB_STATUS" in
-            success)   ICON=":white_check_mark:"; STATE="passed" ;;
-            failure)   ICON=":x:";                STATE="failed" ;;
-            cancelled) ICON=":no_entry_sign:";    STATE="cancelled" ;;
-            *)         ICON=":grey_question:";    STATE="$JOB_STATUS" ;;
-          esac
-          TEXT="${ICON} CI ${STATE} for ${GITHUB_REPOSITORY} @ ${GITHUB_REF_NAME} — ${RUN_URL}"
           curl -sS -X POST -H "Content-type: application/json" \
-            -d "$(jq -n --arg t "$TEXT" '{text: $t}')" \
-            "$SLACK_WEBHOOK_URL"
+            --data @slack-payload.json "$SLACK_WEBHOOK_URL"

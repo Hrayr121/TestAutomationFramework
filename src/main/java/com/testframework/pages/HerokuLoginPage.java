@@ -18,6 +18,9 @@ public class HerokuLoginPage extends BasePage {
     @FindBy(css = "button[type='submit']")
     private WebElement loginButton;
 
+    @FindBy(id = "flash")
+    private WebElement flashBanner;
+
     public HerokuLoginPage(WebDriver driver) {
         super(driver);
     }
@@ -35,5 +38,19 @@ public class HerokuLoginPage extends BasePage {
     public HerokuSecureAreaPage submitLogin() {
         click(loginButton);
         return new HerokuSecureAreaPage(driver);
+    }
+
+    /** Use when a failure is expected — stays on {@code /login} with an error flash. */
+    public HerokuLoginPage submitExpectingFailure() {
+        click(loginButton);
+        return this;
+    }
+
+    public String getFlashMessage() {
+        return getText(flashBanner);
+    }
+
+    public boolean isOnLoginPage() {
+        return getCurrentUrl().contains("/login");
     }
 }
